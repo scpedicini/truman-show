@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <!--    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">-->
+    <!--    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">-->
+    <meta http-equiv="Content-Security-Policy"
+          content="font-src 'self' data:; img-src * 'self' data:; default-src 'self'; script-src 'self'; connect-src * 'self'; frame-src *; style-src 'self' 'unsafe-inline'">
+    <link rel="stylesheet" href="index.css">
+
+    <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+
+    <link rel="stylesheet" href="glightbox/css/glightbox.css">
+    <script src="glightbox/js/glightbox.min.js"></script>
+
+    <title>Truman Show - Global Image Search</title>
+</head>
+<body>
+<!--<h1>Hello World!</h1>-->
+
+<div class="search_container">
+    <input id="search" name="search" type="text" class="form-control" placeholder="What do you want to search for?">
+
+</div>
+
+<button hidden type="button" id="fetch-images" name="fetch-images">Fetch Images</button>
+
+<header></header>
+
+
+<div class="gallery">
+    <!--      <img id="testimg" src="" >-->
+</div>
+
+
+<footer></footer>
+<!-- You can also require other files to run in this process -->
+<script src="./renderer.js"></script>
+</body>
+</html>

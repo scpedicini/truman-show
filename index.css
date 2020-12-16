@@ -1,0 +1,111 @@
+/*html,*/
+/*body {*/
+/*    height: 100vh;*/
+/*}*/
+
+/*body {*/
+/*    display: grid;*/
+/*    grid-template-rows: min-content auto min-content;*/
+/*}*/
+
+header,
+footer,
+div {
+    padding: 10px;
+}
+
+.flexible {
+    /*height: 200px;*/
+    max-width: 250px;
+    /*margin: 10px;*/
+    flex: 1 auto;
+    /*padding: 10px;*/
+}
+
+.image:hover {
+    transition: background-color 0.3s ease;
+    background-color: rgba(0, 130, 255, 0.91);
+}
+
+img {
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+img:hover {
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    /*-webkit-box-shadow: 0px 0px 30px 0px rgba(9, 157, 9, 0.67);*/
+    /*-moz-box-shadow:    0px 0px 30px 0px rgba(0, 255, 0, 0.67);*/
+    /*border-color: #ff0000;*/
+
+    /*box-shadow:         0px 0px 30px 0px rgba(36, 146, 36, 0.67);*/
+    /*background:url('http://www.addglitter.com/link-sparkle.gif');*/
+
+}
+
+/* Grow */
+.image {
+    display: inline-block;
+    vertical-align: middle;
+    transform: translateZ(0);
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+    backface-visibility: hidden;
+    -moz-osx-font-smoothing: grayscale;
+    transition-duration: 0.3s;
+    transition-property: transform;
+}
+
+.image:hover,
+.image:focus,
+.image:active {
+    transition-duration: 0.1s;
+    transition-property: transform;
+    transform: scale(1.2);
+}
+
+
+/*img:last-of-type:hover{*/
+/*    -webkit-border-radius: 10px;*/
+/*    -moz-border-radius: 10px;*/
+/*    border-radius: 10px;*/
+/*    -webkit-box-shadow: 0px 0px 30px 0px rgba(232, 0, 0, 0.67);*/
+/*    -moz-box-shadow:    0px 0px 30px 0px rgba(232, 0, 0, 0.67);*/
+/*    box-shadow:         0px 0px 30px 0px rgba(232, 0, 0, 0.67);*/
+/*}*/
+
+
+.placeholder {
+    /*display:block;*/
+    height: 120px;
+    width: 120px;
+    margin: 10px;
+    /*background: #dd0808 url('./private/0.jpg');*/
+    opacity: 0
+}
+
+.gallery {
+    background-color: #ffffff;
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: center;
+}
+
+/*img {*/
+/*    height: 200px;*/
+/*    max-width: 250px;*/
+/*    padding: 10px;*/
+/*    flex: 1 auto;*/
+/*}*/
+
+/*.image {*/
+/*    flex-flow: row wrap;*/
+/*}*/
+
+/** {*/
+/*    box-sizing: border-box;*/
+/*    margin: 0;*/
+/*    padding: 0;*/
+/*}*/

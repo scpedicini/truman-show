@@ -1,0 +1,20 @@
+{
+  "name": "truman-show",
+  "version": "1.0.0",
+  "description": "Electron application that lets you retrieve images",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "postinstall": "electron-rebuild",
+	"pack": "electron-builder --dir",
+	"dist": "electron-builder"
+  },
+  "repository": "https://github.com/electron/electron-quick-start",
+  "author": "scpedicini",
+  "license": "",
+  "devDependencies": {
+    "electron": "^11.1.0",
+    "electron-builder": "^22.9.1",
+    "electron-rebuild": "^2.3.4"
+  }
+}
