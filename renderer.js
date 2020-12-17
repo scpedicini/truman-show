@@ -16,10 +16,73 @@ let Config = {
     curSearch: '',
     newSearch: '',
     inSearchFunc: false,
+    lightBoxOpen: false,
+    keyMap: { }
 };
 
+//setTimeout(() => Config.newSearch = 'rifle', 1000);
+
+
+let observer = new MutationObserver(function(mutations) {
+    //  detect any new img eleents that don't have an load
+
+    let $images = Array.from( document.querySelectorAll('img') ).filter(i => !i.hasAttribute('data-onload') );
+
+    for(let $img of $images) {
+        console.log('Connecting event listener to img element');
+        $img.addEventListener('load', (event) => {
+            let target = event.target;
+            target.setAttribute('data-originalwidth', target.naturalWidth)
+            target.setAttribute('data-originalheight', target.naturalHeight);
+        });
+        $img.setAttribute('data-onload', 'true');
+    }
+});
+
+observer.observe(document, {attributes: false, childList: true, characterData: false, subtree:true});
+
+
+document.querySelector('.btn').addEventListener('click', (event) => console.log(`${event.target.innerText}`));
 
 let lightBox = undefined;
+
+async function copyToClipboard(event) {
+    console.info('Copying to clipboard', event);
+
+    let $img = event.target.closest('.ginner-container').querySelector('img');
+
+    // this img is completely loaded but we don't have hte actual qulaifications of this file
+    let canvas = document.createElement('canvas');
+    canvas.height = parseInt( $img.getAttribute('data-originalheight') );
+    canvas.width = parseInt( $img.getAttribute('data-originalwidth') );
+    let context = canvas.getContext('2d');
+
+    context.drawImage($img, 0, 0);
+
+    try {
+        let blob = await new Promise(resolve => canvas.toBlob(resolve));
+        await navigator.clipboard.write([
+            new ClipboardItem({
+                'image/png': blob
+            })
+        ]);
+        event.target.innerText = 'Copied';
+        $img.classList.add('copied-image');
+
+        let $checkbox = document.querySelector('.checkbox');
+        // $checkbox.hidden = false;
+
+        let rect = $img.getBoundingClientRect();
+        $checkbox.style.left = `${Math.round(rect.left + rect.width / 2)}px`;
+        $checkbox.style.top = `${Math.round(rect.top + rect.height / 2)}px`;
+
+        //setTimeout(() => $checkbox.hidden = true, 2000)
+    }
+    catch (e)
+    {
+        console.error(e);
+    }
+}
 
 function removeInsideElement($el) {
     while ($el.hasChildNodes()) {
@@ -40,20 +103,54 @@ function initializeLightBox() {
         loop: true,
         autoplayVideos: true,
         touchFollowAxis: true,
+        zoomable: false,
+        draggable: false,
     });
+
+    lightBox.on('open', (e) => {
+        Config.lightBoxOpen = true;
+    });
+
+    lightBox.on('close', (e) => {
+        Config.lightBoxOpen = false;
+    });
+
+    lightBox.on('slide_changed', ({ prev, current }) => {
+        document.querySelector('.checkbox').hidden = true;
+        console.log("Prev slide", prev);
+        console.log("Current slide", current);
+        // Prev and current are objects that contain the following data
+        const { slideIndex, slideNode, slideConfig, player, trigger } = current;
+        // slideIndex - the slide index
+        // slideNode - the node you can modify
+        // slideConfig - will contain the configuration of the slide like title, description, etc.
+        // player - the slide player if it exists otherwise will return false
+        // trigger - this will contain the element that triggers this slide, this can be a link, a button, etc in your HTML, it can be null if the elements in the gallery were set dinamically
+    });
+
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('loading');
 
+    //document.querySelector('.copy-to-clipboard').click = copyToClipboard;
+
     document.getElementById('fetch-images').addEventListener('click', async () => search());
     //document.addEventListener('scroll', search);
-    document.addEventListener('keyup', event => {
+    document.addEventListener('keydown', event => {
         //console.info(event);
         // keyCode is deprecated
-        if (event.key === "Escape") {
-            window.ipcRenderer.send('close');
+
+        if(!(event.key in Config.keyMap)) {
+            Config.keyMap[event.key] = true;
+            if (event.key === "Escape" && !Config.lightBoxOpen) {
+                window.ipcRenderer.send('close');
+            }
         }
+    });
+
+    document.addEventListener('keyup', (event) => {
+        delete Config.keyMap[event.key];
     });
 
 
@@ -72,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 async function LogicLoop() {
-    console.log("Logic Loop");
+    //console.log("Logic Loop");
 
     if(!Config.inSearchFunc) {
         Config.inSearchFunc = true;
@@ -119,11 +216,36 @@ function createContainer() {
     // div.appendChild(img);
     let $el = htmlToElement(`
         <div class="image_container placeholder" data-fullimage="" data-filled="false">
-            <a href="" class="glightbox" data-type="image">
+            <a href="javascript:void(0);" class="glightbox " data-type="image" data-glightbox="description: .custom-desc1">
                 <img alt="" src="" class="image">
             </a>
         </div>`);
     //
+
+    // client side can only save PNG files
+
+    $el.addEventListener('click', async (event) => {
+        console.log('click');
+        /*
+        try {
+            //const imgURL = 'http://localhost:12345/transparent_text.png';
+            const imgURL = event.target.getAttribute('data-fullimage');
+
+            const data = await fetch(imgURL);
+            const blob = await data.blob();
+
+            await navigator.clipboard.write([
+                new ClipboardItem({
+                    [blob.type]: blob
+                })
+            ]);
+            console.log('Fetched image copied.');
+        } catch(err) {
+            console.error(err.name, err.message);
+        }
+        */
+    });
+
     $el.querySelector('img').addEventListener('load', (event) => {
         console.log("Image loaded");
         // TODO this is jenky as hell, we need a better way to find the image_container for this img
@@ -182,6 +304,7 @@ async function search() {
     // let unfilled_elements = Array.from(document.querySelectorAll('div[data-filled="false"]'));
 
     let modifiedGallery = false;
+    let modifiedContainers = [];
 
     // TODO This should probably be a setTimeout repeated call to prevent UI blocking
     while (Config.nextIndex !== undefined &&
@@ -211,8 +334,9 @@ async function search() {
 
                 $container.setAttribute('data-filled', 'true');
                 $container.setAttribute('data-fullimage', item?.link);
-                $container.querySelector('a').href = item?.link;
+                //$container.querySelector('a').href = item?.link;
                 modifiedGallery = true;
+                modifiedContainers.push($container);
             }
         } catch (err) {
             console.error(err);
@@ -224,6 +348,11 @@ async function search() {
 
     if(modifiedGallery)
     {
+        modifiedContainers.forEach(container => {
+            let href = container.getAttribute('data-fullimage');
+            container.querySelector('a').href = href;
+        });
+
         initializeLightBox();
     }
 

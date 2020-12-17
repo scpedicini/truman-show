@@ -6,8 +6,8 @@
   "scripts": {
     "start": "electron .",
     "postinstall": "electron-rebuild",
-	"pack": "electron-builder --dir",
-	"dist": "electron-builder"
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "author": "scpedicini",

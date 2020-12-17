@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, ipcMain } = require('electron')
+const {app, BrowserWindow, ipcMain, globalShortcut } = require('electron')
 const path = require('path')
 
 
@@ -12,7 +12,11 @@ function createWindow() {
         height: 800,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
-        }
+            devTools: false, // can't bring them up even with the menu bar
+        },
+        transparent: true,
+        frame: false,
+
     })
 
     mainWindow.on('ready-to-show', function () {
@@ -23,8 +27,7 @@ function createWindow() {
     // and load the index.html of the app.
     mainWindow.loadFile('index.html')
 
-
-    mainWindow.webContents.openDevTools();
+    //mainWindow.webContents.openDevTools();
 
 }
 
@@ -33,11 +36,24 @@ ipcMain.on('close', function() {
     app.quit();
 });
 
+//app.disableHardwareAcceleration();
+// app.commandLine.appendSwitch('enable-transparent-visuals');
+// app.commandLine.appendSwitch('disable-gpu');
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-    createWindow()
+
+    //setTimeout(() => createWindow(), 5000);
+
+    createWindow();
+
+    // globalShortcut.register('Ctrl+Alt+H', () => {
+    //     console.log("global shortcut");
+    //     mainWindow.focus();
+    // });
+
 
     app.on('activate', function () {
         // On macOS it's common to re-create a window in the app when the

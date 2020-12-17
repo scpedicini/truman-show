@@ -6,7 +6,7 @@
     <!--    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">-->
     <!--    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">-->
     <meta http-equiv="Content-Security-Policy"
-          content="font-src 'self' data:; img-src * 'self' data:; default-src 'self'; script-src 'self'; connect-src * 'self'; frame-src *; style-src 'self' 'unsafe-inline'">
+          content="font-src 'self' data:; img-src * 'self' data:; default-src 'self'; script-src 'self' 'unsafe-inline'; connect-src * 'self'; frame-src *; style-src 'self' 'unsafe-inline'">
     <link rel="stylesheet" href="index.css">
 
     <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -19,6 +19,8 @@
 </head>
 <body>
 <!--<h1>Hello World!</h1>-->
+
+<img class='checkbox' src="./private/checkbox.png" hidden>
 
 <div class="search_container">
     <input id="search" name="search" type="text" class="form-control" placeholder="What do you want to search for?">
@@ -34,6 +36,10 @@
     <!--      <img id="testimg" src="" >-->
 </div>
 
+<div class="glightbox-desc custom-desc1">
+    <div class="btn-primary btn copy-to-clipboard" onclick="copyToClipboard(event);">Copy to Clipboard</div>
+<!--    <div class="btn-primary btn copy-to-clipboard" >Copy to Clipboard</div>-->
+</div>
 
 <footer></footer>
 <!-- You can also require other files to run in this process -->
