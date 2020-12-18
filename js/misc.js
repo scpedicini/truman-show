@@ -39,13 +39,13 @@ class Misc {
     }
 
     static Version() {
-        return "1.0";
+        return '1.0';
     }
 
     static PrefaceWithUriIdentifier(url) {
         if(!this.IsNullOrWhitespace(url) && url.match(/^\s*(https?|file):\/\//gi) === null)
         {
-            url = "file://" + url.trim();
+            url = 'file://' + url.trim();
         }
         return url;
     }
@@ -71,7 +71,7 @@ class Misc {
     static Render(template, paramobj) {
         if(paramobj instanceof Object) {
             for (let key in paramobj) {
-                let re = new RegExp("{{" + key + "}}", "gi");
+                let re = new RegExp('{{' + key + '}}', 'gi');
                 template = template.replace(re, paramobj[key]);
             }
         }

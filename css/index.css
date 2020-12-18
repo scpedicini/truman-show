@@ -1,144 +1,106 @@
-/*html,*/
-/*body {*/
-/*    height: 100vh;*/
-/*}*/
+/* html, */
 
-/*body {*/
-/*    display: grid;*/
-/*    grid-template-rows: min-content auto min-content;*/
-/*}*/
+/* body { */
 
-/*a {*/
-/*    pointer-events: none;*/
-/*}*/
+/*    height: 100vh; */
 
-.gslide-description
-{
-    background-color: transparent !important;
+/* } */
+
+/* body { */
+
+/*    display: grid; */
+
+/*    grid-template-rows: min-content auto min-content; */
+
+/* } */
+
+/* a { */
+
+/*    pointer-events: none; */
+
+/* } */
+
+.gslide-description {
+  background-color: transparent !important;
 }
 
 header,
 footer,
 div {
-    padding: 10px;
+  padding: 10px;
 }
 
 .flexible {
-    /*height: 200px;*/
-    max-width: 250px;
-    /*margin: 10px;*/
-    flex: 1 auto;
-    /*padding: 10px;*/
-}
+  /* height: 200px; */
+  max-width: 250px;
 
-.image:hover {
-    transition: background-color 0.3s ease;
-    background-color: rgba(0, 130, 255, 0.91);
+  /* margin: 10px; */
+  flex: 1 auto;
+
+  /* padding: 10px; */
 }
 
 img {
-    cursor: pointer;
-    border-radius: 10px;
+  cursor: pointer;
+  border-radius: 10px;
 }
 
 img:hover {
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
-    border-radius: 10px;
-    /*-webkit-box-shadow: 0px 0px 30px 0px rgba(9, 157, 9, 0.67);*/
-    /*-moz-box-shadow:    0px 0px 30px 0px rgba(0, 255, 0, 0.67);*/
-    /*border-color: #ff0000;*/
-
-    /*box-shadow:         0px 0px 30px 0px rgba(36, 146, 36, 0.67);*/
-    /*background:url('http://www.addglitter.com/link-sparkle.gif');*/
-
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  /* -webkit-box-shadow: 0px 0px 30px 0px rgba(9, 157, 9, 0.67); */
+  /* -moz-box-shadow:    0px 0px 30px 0px rgba(0, 255, 0, 0.67); */
+  /* border-color: #ff0000; */
+  /* box-shadow:         0px 0px 30px 0px rgba(36, 146, 36, 0.67); */
+  /* background:url('http://www.addglitter.com/link-sparkle.gif'); */
 }
 
 /* Grow */
 .image {
-    display: inline-block;
-    vertical-align: middle;
-    transform: translateZ(0);
-    box-shadow: 0 0 1px rgba(0, 0, 0, 0);
-    backface-visibility: hidden;
-    -moz-osx-font-smoothing: grayscale;
-    transition-duration: 0.3s;
-    transition-property: transform;
+  display: inline-block;
+  vertical-align: middle;
+  transform: translateZ(0);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+  backface-visibility: hidden;
+  -moz-osx-font-smoothing: grayscale;
+  transition-duration: 0.3s;
+  transition-property: transform;
 }
 
 .image:hover,
 .image:focus,
 .image:active {
-    transition-duration: 0.1s;
-    transition-property: transform;
-    transform: scale(1.2);
+  transition-duration: 0.1s;
+  transition-property: transform;
+  transform: scale(1.2);
 }
 
 .copied-image {
-    /*background-image: url(private/checkbox.png);*/
-    /*z-index: 99999999 !important;*/
-    /*display: block;*/
+  /* background-image: url(private/checkbox.png); */
+  /* z-index: 99999999 !important; */
+  /* display: block; */
 }
 
 .checkbox {
-    position: absolute;
-    z-index: 9999999 !important;
+  position: absolute;
+  z-index: 9999999 !important;
 }
 
-/*.copied-image:after {*/
-/*    !*position: absolute;*!*/
-/*    top: 0;*/
-/*    left: 0;*/
-/*    width: 100%;*/
-/*    height: 100%;*/
-/*    !*display: none;*!*/
-/*    !*color: #FFF;*!*/
-/*    background: rgba(0, 0, 0, .6) !important;*/
-/*}*/
-
-
-
-
-/*img:last-of-type:hover{*/
-/*    -webkit-border-radius: 10px;*/
-/*    -moz-border-radius: 10px;*/
-/*    border-radius: 10px;*/
-/*    -webkit-box-shadow: 0px 0px 30px 0px rgba(232, 0, 0, 0.67);*/
-/*    -moz-box-shadow:    0px 0px 30px 0px rgba(232, 0, 0, 0.67);*/
-/*    box-shadow:         0px 0px 30px 0px rgba(232, 0, 0, 0.67);*/
-/*}*/
-
-
 .placeholder {
-    /*display:block;*/
-    height: 120px;
-    width: 120px;
-    margin: 10px;
-    /*background: #dd0808 url('./private/0.jpg');*/
-    opacity: 0
+  /* display:block; */
+  height: 120px;
+  width: 120px;
+  margin: 10px;
+
+  /* background: #dd0808 url('./private/0.jpg'); */
+  opacity: 0;
 }
 
 .gallery {
-    background-color: #ffffff;
-    display: flex;
-    flex-flow: row wrap;
-    align-items: center;
-    justify-content: center;
+  background-color: #fff;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: center;
 }
-
-/*img {*/
-/*    height: 200px;*/
-/*    max-width: 250px;*/
-/*    padding: 10px;*/
-/*    flex: 1 auto;*/
-/*}*/
-
-/*.image {*/
-/*    flex-flow: row wrap;*/
-/*}*/
-
-/** {*/
-/*    box-sizing: border-box;*/
-/*    margin: 0;*/
-/*    padding: 0;*/
-/*}*/

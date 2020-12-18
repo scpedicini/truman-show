@@ -7,7 +7,6 @@
 
 let $gallery = document.querySelector('.gallery');
 let $searchTextBox = document.querySelector('#search');
-let containers;
 
 let Config = {
     State: '',
@@ -35,7 +34,7 @@ function setupObserver() {
             console.log('Connecting event listener to img element');
             $img.addEventListener('load', (event) => {
                 let target = event.target;
-                target.setAttribute('data-originalwidth', target.naturalWidth)
+                target.setAttribute('data-originalwidth', target.naturalWidth);
                 target.setAttribute('data-originalheight', target.naturalHeight);
             });
             $img.setAttribute('data-onload', 'true');
@@ -58,7 +57,7 @@ function setupHandlers() {
     document.addEventListener('keydown', event => {
         if(!(event.key in Config.keyMap)) {
             Config.keyMap[event.key] = true;
-            if (event.key === "Escape" && !Config.lightBoxOpen) {
+            if (event.key === 'Escape' && !Config.lightBoxOpen) {
                 window.ipcRenderer.send('close');
             }
         }
@@ -158,8 +157,8 @@ function initializeLightBox() {
 
     lightBox.on('slide_changed', ({ prev, current }) => {
         document.querySelector('.checkbox').hidden = true;
-        console.log("Prev slide", prev);
-        console.log("Current slide", current);
+        console.log('Prev slide', prev);
+        console.log('Current slide', current);
         // Prev and current are objects that contain the following data
         const { slideIndex, slideNode, slideConfig, player, trigger } = current;
         // slideIndex - the slide index
@@ -194,7 +193,7 @@ function buildGoogleUrl({cseId, cseKey, searchText, imgType = undefined, transpa
         url += `&imgType=${imgType}`;
 
     if(transparencyOnly)
-        url += "&imgColorType=trans";
+        url += '&imgColorType=trans';
 
     return url;
 }
@@ -217,7 +216,7 @@ function createContainer() {
     //
 
     $el.querySelector('img').addEventListener('load', (event) => {
-        console.log("Image loaded");
+        console.log('Image loaded');
         // TODO this is jenky as hell, we need a better way to find the image_container for this img
         event.target.parentElement.parentElement.classList.remove('placeholder');
         event.target.parentElement.parentElement.classList.add('flexible');
@@ -228,7 +227,7 @@ function createContainer() {
 
 function isBelow($el) {
     let win_height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-    let top = window.scrollY || window.scrollTop || document.getElementsByTagName("html")[0].scrollTop;
+    let top = window.scrollY || window.scrollTop || document.getElementsByTagName('html')[0].scrollTop;
     let bottom = top + win_height;
 
     let rect = $el.getBoundingClientRect();
@@ -255,7 +254,7 @@ async function search() {
     let $container;
     let containers = Array.from(document.querySelectorAll('.image_container'));
     while (!containers.some(c => isBelow(c))) {
-        console.log("No bottom level image containers, creating additional ones");
+        console.log('No bottom level image containers, creating additional ones');
 
         $container = createContainer();
         $gallery.appendChild($container);
