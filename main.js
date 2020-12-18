@@ -1,9 +1,29 @@
 // Modules to control application life and create native browser window
 const {app, BrowserWindow, ipcMain, globalShortcut } = require('electron')
 const path = require('path')
-
+const fs = require('fs');
 
 let mainWindow;
+let appSettings;
+
+function getSettings() {
+    // settings override environment variable
+    let basepath = app.getAppPath();
+    let settingsfile = path.join(basepath, 'appsettings.json');
+
+    let settings = require('./js/appsettings');
+
+    try {
+        if (fs.existsSync(settingsfile))
+            settings = {...settings, ...JSON.parse(fs.readFileSync(settingsfile, 'utf8' ))};
+    } catch(e) {
+        console.error(e);
+    }
+
+    return settings;
+}
+
+
 
 function createWindow() {
     // Create the browser window.
@@ -12,7 +32,7 @@ function createWindow() {
         height: 800,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
-            devTools: false, // can't bring them up even with the menu bar
+            devTools: appSettings.DEBUG_MODE ?? false, // can't bring them up even with the menu bar
         },
         transparent: true,
         frame: false,
@@ -27,10 +47,13 @@ function createWindow() {
     // and load the index.html of the app.
     mainWindow.loadFile('index.html')
 
-    //mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
 }
 
+ipcMain.handle('settings', args => {
+    return appSettings;
+});
 
 ipcMain.on('close', function() {
     app.quit();
@@ -39,6 +62,8 @@ ipcMain.on('close', function() {
 //app.disableHardwareAcceleration();
 // app.commandLine.appendSwitch('enable-transparent-visuals');
 // app.commandLine.appendSwitch('disable-gpu');
+
+appSettings = getSettings();
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

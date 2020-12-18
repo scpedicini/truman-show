@@ -2,6 +2,7 @@
 private
 *.db
 dist
+appsettings.json
 
 # Webstorm
 .idea/

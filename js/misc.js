@@ -88,6 +88,24 @@ class Misc {
     static IsNullOrWhitespace(x) { return this.IsNullOrUndefined(x) || x.trim().length === 0; }
 
     static RandomInteger(inclusiveMin, inclusiveMax) { return inclusiveMin + Math.floor(Math.random() * (inclusiveMax-inclusiveMin+1)); }
+
+    static removeInsideElement($el) {
+        while ($el.hasChildNodes()) {
+            $el.removeChild($el.lastChild);
+        }
+    }
+
+
+    /**
+     * @param {String} html - representing a single element
+     * @return {Element}
+     */
+    static htmlToElement(html) {
+        let template = document.createElement('template');
+        html = html.trim(); // Never return a text node of whitespace as the result
+        template.innerHTML = html;
+        return template.content.firstChild;
+    }
 }
 
 

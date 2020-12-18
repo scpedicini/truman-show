@@ -7,42 +7,89 @@
 
 let $gallery = document.querySelector('.gallery');
 let $searchTextBox = document.querySelector('#search');
-let $testImage = document.getElementById('testimg');
 let containers;
 
 let Config = {
-    State: 'Idle',
+    State: '',
     nextIndex: 0,
     curSearch: '',
     newSearch: '',
     inSearchFunc: false,
     lightBoxOpen: false,
-    keyMap: { }
+    keyMap: { },
+    appSettings: { }
 };
 
-//setTimeout(() => Config.newSearch = 'rifle', 1000);
-
-
-let observer = new MutationObserver(function(mutations) {
-    //  detect any new img eleents that don't have an load
-
-    let $images = Array.from( document.querySelectorAll('img') ).filter(i => !i.hasAttribute('data-onload') );
-
-    for(let $img of $images) {
-        console.log('Connecting event listener to img element');
-        $img.addEventListener('load', (event) => {
-            let target = event.target;
-            target.setAttribute('data-originalwidth', target.naturalWidth)
-            target.setAttribute('data-originalheight', target.naturalHeight);
-        });
-        $img.setAttribute('data-onload', 'true');
-    }
+//setTimeout(() => Config.newSearch = 'brannigans big book of war', 1000);
+document.addEventListener('DOMContentLoaded', () => {
+    runSetup();
 });
 
-observer.observe(document, {attributes: false, childList: true, characterData: false, subtree:true});
+function setupObserver() {
+    let observer = new MutationObserver(function(mutations) {
+        //  detect any new img elements that don't have load attribute
+
+        let $images = Array.from( document.querySelectorAll('img') ).filter(i => !i.hasAttribute('data-onload') );
+
+        for(let $img of $images) {
+            console.log('Connecting event listener to img element');
+            $img.addEventListener('load', (event) => {
+                let target = event.target;
+                target.setAttribute('data-originalwidth', target.naturalWidth)
+                target.setAttribute('data-originalheight', target.naturalHeight);
+            });
+            $img.setAttribute('data-onload', 'true');
+        }
+    });
+
+    observer.observe(document, {attributes: false, childList: true, characterData: false, subtree:true});
+}
+
+async function setupSettings() {
+    let obj = await window.ipcRenderer.invoke('settings');
+    Config.State = 'Ready';
+    Config.appSettings = obj;
+}
+
+function setupHandlers() {
+    document.querySelector('.btn').addEventListener('click', (event) => console.log(`${event.target.textContent}`));
+
+    document.getElementById('fetch-images').addEventListener('click', async () => search());
+    document.addEventListener('keydown', event => {
+        if(!(event.key in Config.keyMap)) {
+            Config.keyMap[event.key] = true;
+            if (event.key === "Escape" && !Config.lightBoxOpen) {
+                window.ipcRenderer.send('close');
+            }
+        }
+    });
+
+    document.addEventListener('keyup', (event) => {
+        delete Config.keyMap[event.key];
+    });
 
 
-document.querySelector('.btn').addEventListener('click', (event) => console.log(`${event.target.innerText}`));
+    $searchTextBox.addEventListener('keyup', (event) => {
+        if(event.key === 'Enter') {
+            //Config.State = 'Search';
+            Config.newSearch = $searchTextBox.value.trim();
+            console.log(`Searching for ${Config.newSearch}`);
+        }
+    });
+
+    $searchTextBox.focus();
+
+    setTimeout(LogicLoop, 1000);
+}
+
+
+function runSetup() {
+    setupSettings();
+    setupObserver();
+    setupHandlers();
+}
+
+
 
 let lightBox = undefined;
 
@@ -66,7 +113,7 @@ async function copyToClipboard(event) {
                 'image/png': blob
             })
         ]);
-        event.target.innerText = 'Copied';
+        event.target.textContent = 'Copied';
         $img.classList.add('copied-image');
 
         let $checkbox = document.querySelector('.checkbox');
@@ -75,8 +122,6 @@ async function copyToClipboard(event) {
         let rect = $img.getBoundingClientRect();
         $checkbox.style.left = `${Math.round(rect.left + rect.width / 2)}px`;
         $checkbox.style.top = `${Math.round(rect.top + rect.height / 2)}px`;
-
-        //setTimeout(() => $checkbox.hidden = true, 2000)
     }
     catch (e)
     {
@@ -84,11 +129,7 @@ async function copyToClipboard(event) {
     }
 }
 
-function removeInsideElement($el) {
-    while ($el.hasChildNodes()) {
-        $el.removeChild($el.lastChild);
-    }
-}
+
 
 
 function initializeLightBox() {
@@ -130,42 +171,7 @@ function initializeLightBox() {
 
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('loading');
 
-    //document.querySelector('.copy-to-clipboard').click = copyToClipboard;
-
-    document.getElementById('fetch-images').addEventListener('click', async () => search());
-    //document.addEventListener('scroll', search);
-    document.addEventListener('keydown', event => {
-        //console.info(event);
-        // keyCode is deprecated
-
-        if(!(event.key in Config.keyMap)) {
-            Config.keyMap[event.key] = true;
-            if (event.key === "Escape" && !Config.lightBoxOpen) {
-                window.ipcRenderer.send('close');
-            }
-        }
-    });
-
-    document.addEventListener('keyup', (event) => {
-        delete Config.keyMap[event.key];
-    });
-
-
-    $searchTextBox.addEventListener('keyup', (event) => {
-        if(event.key === 'Enter') {
-            //Config.State = 'Search';
-            Config.newSearch = $searchTextBox.value.trim();
-            console.log(`Searching for ${Config.newSearch}`);
-        }
-    });
-    $searchTextBox.focus();
-
-    setTimeout(LogicLoop, 1000);
-
-});
 
 
 async function LogicLoop() {
@@ -180,8 +186,6 @@ async function LogicLoop() {
     setTimeout(LogicLoop, 500);
 }
 
-
-
 // imgType = clipart, face, lineart, stock, photo, animated
 function buildGoogleUrl({cseId, cseKey, searchText, imgType = undefined, transparencyOnly = false, startIndex = 0}) {
     let url = `https://www.googleapis.com/customsearch/v1?q=${searchText}&start=${startIndex}&cx=${cseId}&searchType=image&key=${cseKey}&filter=1&safe=active`;
@@ -195,16 +199,6 @@ function buildGoogleUrl({cseId, cseKey, searchText, imgType = undefined, transpa
     return url;
 }
 
-/**
- * @param {String} html - representing a single element
- * @return {Element}
- */
-function htmlToElement(html) {
-    let template = document.createElement('template');
-    html = html.trim(); // Never return a text node of whitespace as the result
-    template.innerHTML = html;
-    return template.content.firstChild;
-}
 
 function createContainer() {
     // let div = new HTMLDivElement();
@@ -214,37 +208,13 @@ function createContainer() {
     // img.class = 'image';
     // return img;
     // div.appendChild(img);
-    let $el = htmlToElement(`
+    let $el = Misc.htmlToElement(`
         <div class="image_container placeholder" data-fullimage="" data-filled="false">
             <a href="javascript:void(0);" class="glightbox " data-type="image" data-glightbox="description: .custom-desc1">
                 <img alt="" src="" class="image">
             </a>
         </div>`);
     //
-
-    // client side can only save PNG files
-
-    $el.addEventListener('click', async (event) => {
-        console.log('click');
-        /*
-        try {
-            //const imgURL = 'http://localhost:12345/transparent_text.png';
-            const imgURL = event.target.getAttribute('data-fullimage');
-
-            const data = await fetch(imgURL);
-            const blob = await data.blob();
-
-            await navigator.clipboard.write([
-                new ClipboardItem({
-                    [blob.type]: blob
-                })
-            ]);
-            console.log('Fetched image copied.');
-        } catch(err) {
-            console.error(err.name, err.message);
-        }
-        */
-    });
 
     $el.querySelector('img').addEventListener('load', (event) => {
         console.log("Image loaded");
@@ -263,10 +233,6 @@ function isBelow($el) {
 
     let rect = $el.getBoundingClientRect();
 
-    //let on_screen = rect.bottom > top && rect.top < bottom;
-    //let below_screen = !on_screen && rect.top > bottom;
-    //let off_screen = rect.bottom < 0 || rect.top > win_height;
-    //let below_screen = off_screen && rect.top > win_height;
     let below_screen = rect.top > win_height;
     return below_screen;
 }
@@ -278,7 +244,7 @@ async function search() {
         console.log(`Search param has changed from ${Config.curSearch} to ${Config.newSearch}`);
         Config.nextIndex = 0;
         Config.curSearch = Config.newSearch;
-        removeInsideElement($gallery);
+        Misc.removeInsideElement($gallery);
         window.scrollTo(0, 0);
     }
 
@@ -287,9 +253,6 @@ async function search() {
 
     // let the process begin
     let $container;
-    // TODO since are placeholders are invisible anyway, we could just check to see if any image_containers are off-screen
-    // TODO if they are not, then run another ajax query and keep adding elements to the DOM
-    // check for any image_container that is below
     let containers = Array.from(document.querySelectorAll('.image_container'));
     while (!containers.some(c => isBelow(c))) {
         console.log("No bottom level image containers, creating additional ones");
@@ -299,9 +262,6 @@ async function search() {
 
         containers = Array.from(document.querySelectorAll('.image_container'));
     }
-
-    //  find any
-    // let unfilled_elements = Array.from(document.querySelectorAll('div[data-filled="false"]'));
 
     let modifiedGallery = false;
     let modifiedContainers = [];
@@ -314,7 +274,7 @@ async function search() {
         try {
 
             let response = await fetch(buildGoogleUrl(
-                {cseId: window.AppConfig.CSE_ID, cseKey: window.AppConfig.CSE_KEY, searchText: Config.curSearch, startIndex: Config.nextIndex}));
+                {cseId: Config.appSettings.CSE_ID, cseKey: Config.appSettings.CSE_KEY, searchText: Config.curSearch, startIndex: Config.nextIndex}));
             let json = await response.json();
 
             Config.nextIndex = json?.queries?.nextPage?.[0]?.startIndex;
