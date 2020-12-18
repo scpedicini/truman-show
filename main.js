@@ -8,10 +8,12 @@ let appSettings;
 
 function getSettings() {
     // settings override environment variable
-    let basepath = app.getAppPath();
-    let settingsfile = path.join(basepath, 'appsettings.json');
 
     let settings = require('./js/appsettings');
+
+    // dev = home directory, prod = user data path (roaming/truman-show)
+    let basepath = settings.DEV_ENV ? app.getAppPath() : app.getPath('userData');
+    let settingsfile = path.join(basepath, 'appsettings.json');
 
     try {
         if (fs.existsSync(settingsfile))
@@ -32,7 +34,7 @@ function createWindow() {
         height: 800,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
-            devTools: appSettings.DEBUG_MODE ?? false, // can't bring them up even with the menu bar
+            devTools: appSettings.DEV_ENV ?? false, // can't bring them up even with the menu bar
         },
         transparent: true,
         frame: false,
@@ -47,7 +49,8 @@ function createWindow() {
     // and load the index.html of the app.
     mainWindow.loadFile('index.html')
 
-    mainWindow.webContents.openDevTools();
+    if(appSettings.DEV_ENV)
+        mainWindow.webContents.openDevTools();
 
 }
 

@@ -46,9 +46,9 @@ function setupObserver() {
 }
 
 async function setupSettings() {
-    let obj = await window.ipcRenderer.invoke('settings');
+    let settings = await window.ipcRenderer.invoke('settings');
     Config.State = 'Ready';
-    Config.appSettings = obj;
+    Config.appSettings = settings;
 }
 
 function setupHandlers() {

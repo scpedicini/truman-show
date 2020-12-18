@@ -1,6 +1,6 @@
 let appSettings = { };
 
-appSettings.DEBUG_MODE = true;
+appSettings.DEV_ENV = false;
 appSettings.CSE_ID = process.env.CSE_ID;
 appSettings.CSE_KEY = process.env.CSE_KEY;
 

@@ -1,7 +1,7 @@
 {
   "name": "truman-show",
-  "version": "1.0.0",
-  "description": "Electron application that lets you retrieve images",
+  "version": "1.0.1",
+  "description": "Electron application that lets you retrieve images from Google API in a seamless manner and copy them to your clipboard",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -9,12 +9,15 @@
     "pack": "electron-builder --dir",
     "dist": "electron-builder"
   },
-  "repository": "https://github.com/electron/electron-quick-start",
-  "author": "scpedicini",
-  "license": "",
+  "repository": "https://github.com/scpedicini/truman-show",
+  "author": "scpedicini@gmail.com",
+  "license": "GPL-3.0",
+  "homepage": "https://specularrealms.com",
   "devDependencies": {
     "electron": "^11.1.0",
     "electron-builder": "^22.9.1",
-    "electron-rebuild": "^2.3.4"
+    "electron-rebuild": "^2.3.4",
+    "stylelint": "^13.8.0",
+    "stylelint-config-standard": "^20.0.0"
   }
 }
