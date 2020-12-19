@@ -5,24 +5,21 @@ const fs = require('fs');
 
 let mainWindow;
 let appSettings;
+let settingsFile;
 
-function getSettings() {
-    // settings override environment variable
 
-    let settings = require('./js/appsettings');
+let baseSettings = require('./js/appsettings');
 
-    // dev = home directory, prod = user data path (roaming/truman-show)
-    let basepath = settings.DEV_ENV ? app.getAppPath() : app.getPath('userData');
-    let settingsfile = path.join(basepath, 'appsettings.json');
+// dev = home directory, prod = user data path (roaming/truman-show)
+let basepath = baseSettings.DEV_ENV ? app.getAppPath() : app.getPath('userData');
+settingsFile = path.join(basepath, 'appsettings.json');
 
-    try {
-        if (fs.existsSync(settingsfile))
-            settings = {...settings, ...JSON.parse(fs.readFileSync(settingsfile, 'utf8' ))};
-    } catch(e) {
-        console.error(e);
-    }
-
-    return settings;
+// settings override environment variable
+try {
+    if (fs.existsSync(settingsFile))
+        appSettings = {...baseSettings, ...JSON.parse(fs.readFileSync(settingsFile, 'utf8' ))};
+} catch(e) {
+    console.error(e);
 }
 
 
@@ -54,7 +51,12 @@ function createWindow() {
 
 }
 
-ipcMain.handle('settings', args => {
+ipcMain.on('save-settings', (event, data)  => {
+    appSettings = {...appSettings, ...data};
+    fs.writeFileSync(settingsFile, JSON.stringify(appSettings), 'utf8');
+});
+
+ipcMain.handle('load-settings', args => {
     return appSettings;
 });
 
@@ -66,7 +68,7 @@ ipcMain.on('close', function() {
 // app.commandLine.appendSwitch('enable-transparent-visuals');
 // app.commandLine.appendSwitch('disable-gpu');
 
-appSettings = getSettings();
+
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

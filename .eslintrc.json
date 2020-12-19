@@ -31,6 +31,7 @@
     "globals": {
         "Misc": true,
         "ClipboardItem": true,
-        "GLightbox": true
+        "GLightbox": true,
+        "bootstrap": true
     }
 }

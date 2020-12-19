@@ -7,6 +7,8 @@
 
 let $gallery = document.querySelector('.gallery');
 let $searchTextBox = document.querySelector('#search');
+let $modal = document.querySelector('#settings');
+let modalSettings = new bootstrap.Modal($modal, { focus: true });
 
 let Config = {
     State: '',
@@ -45,13 +47,24 @@ function setupObserver() {
 }
 
 async function setupSettings() {
-    let settings = await window.ipcRenderer.invoke('settings');
+    let settings = await window.ipcRenderer.invoke('load-settings');
     Config.State = 'Ready';
     Config.appSettings = settings;
 }
 
 function setupHandlers() {
-    document.querySelector('.btn').addEventListener('click', (event) => console.log(`${event.target.textContent}`));
+    document.querySelector('#load-settings').addEventListener('click', (event) => {
+        document.querySelector('#cse_clientid').value = Config.appSettings.CSE_ID;
+        document.querySelector('#cse_key').value = Config.appSettings.CSE_KEY;
+        modalSettings.show();
+    });
+
+    document.querySelector('#save-settings').addEventListener('click', (event) => {
+        Config.appSettings.CSE_ID = document.querySelector('#cse_clientid').value;
+        Config.appSettings.CSE_KEY = document.querySelector('#cse_key').value;
+        window.ipcRenderer.send('save-settings', Config.appSettings);
+        modalSettings.hide();
+    });
 
     document.getElementById('fetch-images').addEventListener('click', async () => search());
     document.addEventListener('keydown', event => {
@@ -129,8 +142,6 @@ async function copyToClipboard(event) {
 }
 
 
-
-
 function initializeLightBox() {
     if(lightBox !== undefined)
     {
@@ -139,35 +150,24 @@ function initializeLightBox() {
     }
 
     lightBox = GLightbox({
+        selector: '.glightbox',
         touchNavigation: true,
         loop: true,
         autoplayVideos: true,
         touchFollowAxis: true,
         zoomable: false,
         draggable: false,
+        skin: 'paddedbox', // creates a class called glightbox-paddedbox
     });
 
     lightBox.on('open', (e) => {
         Config.lightBoxOpen = true;
+        // _imgNode.setAttribute('style', "max-height: calc(100vh - ".concat(descHeight, "px)"));
     });
 
     lightBox.on('close', (e) => {
         Config.lightBoxOpen = false;
     });
-
-    lightBox.on('slide_changed', ({ prev, current }) => {
-        document.querySelector('.checkbox').hidden = true;
-        console.log('Prev slide', prev);
-        console.log('Current slide', current);
-        // Prev and current are objects that contain the following data
-        const { slideIndex, slideNode, slideConfig, player, trigger } = current;
-        // slideIndex - the slide index
-        // slideNode - the node you can modify
-        // slideConfig - will contain the configuration of the slide like title, description, etc.
-        // player - the slide player if it exists otherwise will return false
-        // trigger - this will contain the element that triggers this slide, this can be a link, a button, etc in your HTML, it can be null if the elements in the gallery were set dinamically
-    });
-
 }
 
 
@@ -200,20 +200,12 @@ function buildGoogleUrl({cseId, cseKey, searchText, imgType = undefined, transpa
 
 
 function createContainer() {
-    // let div = new HTMLDivElement();
-    // div.classList = 'image_container placeholder';
-    //
-    // let img = new Image();
-    // img.class = 'image';
-    // return img;
-    // div.appendChild(img);
     let $el = Misc.htmlToElement(`
         <div class="image_container placeholder" data-fullimage="" data-filled="false">
             <a href="javascript:void(0);" class="glightbox " data-type="image" data-glightbox="description: .custom-desc1">
                 <img alt="" src="" class="image">
             </a>
         </div>`);
-    //
 
     $el.querySelector('img').addEventListener('load', (event) => {
         console.log('Image loaded');
