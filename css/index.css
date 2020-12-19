@@ -10,8 +10,13 @@
 /*    pointer-events: none; */
 /* } */
 
+.fill {
+  min-height: 90%;
+  height: 90%;
+}
+
 .glightbox-paddedbox {
-  margin: 0px;
+  margin: 0;
 }
 
 .copy-to-clipboard {
@@ -50,8 +55,6 @@ img {
   cursor: pointer;
   border-radius: 10px;
 }
-
-
 
 /* Grow */
 .image {
@@ -95,7 +98,7 @@ img {
 }
 
 .gallery {
-  background-color: #fff;
+  /*background-color: #fff;*/
   display: flex;
   flex-flow: row wrap;
   align-items: center;

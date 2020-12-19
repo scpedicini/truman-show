@@ -1,6 +1,19 @@
 
 class Misc {
 
+
+    static isBelow($el) {
+        let win_height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        let top = window.scrollY || window.scrollTop || document.getElementsByTagName('html')[0].scrollTop;
+        let bottom = top + win_height;
+
+        let rect = $el.getBoundingClientRect();
+
+        let below_screen = rect.top > win_height;
+        return below_screen;
+    }
+
+
     static blockCPU(baseNumber) {
         console.time('blockCPU');
         let result = 0;
@@ -33,7 +46,7 @@ class Misc {
         return (file?.substring(file.lastIndexOf('.') + 1) ?? '').toLowerCase();
     }
 
-    static ToggleClass($el, primClass, allClasses) {
+    static toggleClass($el, primClass, allClasses) {
         allClasses.filter(c => c !== primClass).forEach( (c) => $el.classList.remove(c));
         $el.classList.add(primClass);
     }

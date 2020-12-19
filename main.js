@@ -14,10 +14,12 @@ let baseSettings = require('./js/appsettings');
 let basepath = baseSettings.DEV_ENV ? app.getAppPath() : app.getPath('userData');
 settingsFile = path.join(basepath, 'appsettings.json');
 
+appSettings = {...baseSettings};
+
 // settings override environment variable
 try {
     if (fs.existsSync(settingsFile))
-        appSettings = {...baseSettings, ...JSON.parse(fs.readFileSync(settingsFile, 'utf8' ))};
+        appSettings = {...appSettings, ...JSON.parse(fs.readFileSync(settingsFile, 'utf8' ))};
 } catch(e) {
     console.error(e);
 }

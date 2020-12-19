@@ -10,6 +10,8 @@ let $searchTextBox = document.querySelector('#search');
 let $modal = document.querySelector('#settings');
 let modalSettings = new bootstrap.Modal($modal, { focus: true });
 
+let lightBoxList = [];
+
 let Config = {
     State: '',
     nextIndex: 0,
@@ -50,18 +52,22 @@ async function setupSettings() {
     let settings = await window.ipcRenderer.invoke('load-settings');
     Config.State = 'Ready';
     Config.appSettings = settings;
+    document.querySelector('body').style.backgroundColor = Config.appSettings.COLOR_SETTINGS;
 }
 
 function setupHandlers() {
     document.querySelector('#load-settings').addEventListener('click', (event) => {
         document.querySelector('#cse_clientid').value = Config.appSettings.CSE_ID;
         document.querySelector('#cse_key').value = Config.appSettings.CSE_KEY;
+        document.querySelector('#settings_color').value = Config.appSettings.COLOR_SETTINGS;
         modalSettings.show();
     });
 
     document.querySelector('#save-settings').addEventListener('click', (event) => {
         Config.appSettings.CSE_ID = document.querySelector('#cse_clientid').value;
         Config.appSettings.CSE_KEY = document.querySelector('#cse_key').value;
+        Config.appSettings.COLOR_SETTINGS = document.querySelector('#settings_color').value;
+        document.querySelector('body').style.backgroundColor = Config.appSettings.COLOR_SETTINGS;
         window.ipcRenderer.send('save-settings', Config.appSettings);
         modalSettings.hide();
     });
@@ -108,7 +114,11 @@ let lightBox = undefined;
 async function copyToClipboard(event) {
     console.info('Copying to clipboard', event);
 
-    let $img = event.target.closest('.ginner-container').querySelector('img');
+    let $img;
+    if(event instanceof HTMLImageElement)
+        $img = event;
+    else
+        $img = event.target.closest('.ginner-container').querySelector('img');
 
     // this img is completely loaded but we don't have hte actual qulaifications of this file
     let canvas = document.createElement('canvas');
@@ -125,7 +135,10 @@ async function copyToClipboard(event) {
                 'image/png': blob
             })
         ]);
-        event.target.textContent = 'Copied';
+
+        if(!(event instanceof HTMLImageElement))
+            event.target.textContent = 'Copied';
+
         $img.classList.add('copied-image');
 
         let $checkbox = document.querySelector('.checkbox');
@@ -143,14 +156,15 @@ async function copyToClipboard(event) {
 
 
 function initializeLightBox() {
-    if(lightBox !== undefined)
-    {
-        lightBox.destroy();
-        lightBox = undefined;
-    }
+
+    // if(lightBox !== undefined)
+    // {
+    //     lightBox.destroy();
+    //     lightBox = undefined;
+    // }
 
     lightBox = GLightbox({
-        selector: '.glightbox',
+        selector: `.glightbox-${lightBoxList.length}`,
         touchNavigation: true,
         loop: true,
         autoplayVideos: true,
@@ -158,6 +172,35 @@ function initializeLightBox() {
         zoomable: false,
         draggable: false,
         skin: 'paddedbox', // creates a class called glightbox-paddedbox
+    });
+    // slide_after_load
+    lightBox.on('slide_changed', e => {
+        console.info('slide changed', e);
+        // current.slideNode.querySelector('img') instanceof HTMLImageElement
+
+        // current.slideNode.nextSibling = div.gslide.loaded.current
+
+        // workaround because glightbox e.current is usually one image behind
+        let node = undefined;
+        if(e?.current?.slideNode?.previousSibling?.classList?.contains('current'))
+            node = e.current.slideNode.previousSibling;
+        else if(e?.current?.slideNode?.nextSibling?.classList?.contains('current'))
+            node = e.current.slideNode.nextSibling;
+        else
+            node = e.current.slideNode;
+
+        copyToClipboard(node.querySelector('img'));
+
+        //console.info(current.slideNode.querySelector('img'));
+        //copyToClipboard(current.slideNode.querySelector('img'));
+    });
+
+    // this method is useless because it runs multiple times (possibly because of preloading??)
+    lightBox.on('slide_after_load', e => {
+        // console.info('slide_after_load', e);
+        // console.info(e.slideNode.querySelector('img'));
+        // current.slideNode.querySelector('img') instanceof HTMLImageElement
+        //copyToClipboard(current.slideNode.querySelector('img'));
     });
 
     lightBox.on('open', (e) => {
@@ -168,6 +211,8 @@ function initializeLightBox() {
     lightBox.on('close', (e) => {
         Config.lightBoxOpen = false;
     });
+
+    lightBoxList.push(lightBox);
 }
 
 
@@ -200,33 +245,24 @@ function buildGoogleUrl({cseId, cseKey, searchText, imgType = undefined, transpa
 
 
 function createContainer() {
+
     let $el = Misc.htmlToElement(`
         <div class="image_container placeholder" data-fullimage="" data-filled="false">
-            <a href="javascript:void(0);" class="glightbox " data-type="image" data-glightbox="description: .custom-desc1">
+            <a href="javascript:void(0);" class="glightbox-${lightBoxList.length}" data-type="image" data-glightbox="description: .custom-desc1">
                 <img alt="" src="" class="image">
             </a>
         </div>`);
 
+
     $el.querySelector('img').addEventListener('load', (event) => {
-        console.log('Image loaded');
-        // TODO this is jenky as hell, we need a better way to find the image_container for this img
-        event.target.parentElement.parentElement.classList.remove('placeholder');
-        event.target.parentElement.parentElement.classList.add('flexible');
+        console.log('Thumbnail loaded');
+        Misc.toggleClass(event.target.closest('div.placeholder'), 'flexible', ['flexible', 'placeholder']);
     });
 
     return $el;
 }
 
-function isBelow($el) {
-    let win_height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-    let top = window.scrollY || window.scrollTop || document.getElementsByTagName('html')[0].scrollTop;
-    let bottom = top + win_height;
 
-    let rect = $el.getBoundingClientRect();
-
-    let below_screen = rect.top > win_height;
-    return below_screen;
-}
 
 async function search() {
 
@@ -237,6 +273,12 @@ async function search() {
         Config.curSearch = Config.newSearch;
         Misc.removeInsideElement($gallery);
         window.scrollTo(0, 0);
+
+        // destroy all light boxes
+        for(let l of lightBoxList)
+            l.destroy();
+
+        lightBoxList = [];
     }
 
     if(Misc.IsNullOrWhitespace(Config.curSearch) || Config.nextIndex === undefined) return;
@@ -245,7 +287,7 @@ async function search() {
     // let the process begin
     let $container;
     let containers = Array.from(document.querySelectorAll('.image_container'));
-    while (!containers.some(c => isBelow(c))) {
+    while (!containers.some(c => Misc.isBelow(c))) {
         console.log('No bottom level image containers, creating additional ones');
 
         $container = createContainer();
@@ -257,7 +299,6 @@ async function search() {
     let modifiedGallery = false;
     let modifiedContainers = [];
 
-    // TODO This should probably be a setTimeout repeated call to prevent UI blocking
     while (Config.nextIndex !== undefined &&
            Array.from(document.querySelectorAll('div[data-filled="false"]')).length > 0) {
         // run a query and prepare to populate these
@@ -285,7 +326,6 @@ async function search() {
 
                 $container.setAttribute('data-filled', 'true');
                 $container.setAttribute('data-fullimage', item?.link);
-                //$container.querySelector('a').href = item?.link;
                 modifiedGallery = true;
                 modifiedContainers.push($container);
             }
@@ -297,6 +337,7 @@ async function search() {
         // we might not have been able to fill all the elements, in this case we need to rerun again
     }
 
+    // don't insert the <a> elements until we call lightbox otherwise the <a> tags will redirect to the files
     if(modifiedGallery)
     {
         modifiedContainers.forEach(container => {

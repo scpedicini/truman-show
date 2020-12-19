@@ -1,8 +1,9 @@
 let appSettings = { };
 
-appSettings.DEV_ENV = true;
+appSettings.DEV_ENV = false;
 appSettings.CSE_ID = process.env.CSE_ID;
 appSettings.CSE_KEY = process.env.CSE_KEY;
+appSettings.COLOR_SETTINGS = '#eeeeee';
 
 // appSettings.LocalPath = `F:\\Temp\\Images`;
 
