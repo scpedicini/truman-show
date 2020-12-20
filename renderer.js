@@ -87,12 +87,21 @@ function setupHandlers() {
     });
 
 
+    let fnInputChanged = Misc.debounce(() => {
+        Config.newSearch = $searchTextBox.value.trim();
+    }, 1500);
+
+    $searchTextBox.addEventListener('input', fnInputChanged);
     $searchTextBox.addEventListener('keyup', (event) => {
         if(event.key === 'Enter') {
             //Config.State = 'Search';
             Config.newSearch = $searchTextBox.value.trim();
             console.log(`Searching for ${Config.newSearch}`);
         }
+    });
+
+    document.addEventListener('resize', () => {
+
     });
 
     $searchTextBox.focus();

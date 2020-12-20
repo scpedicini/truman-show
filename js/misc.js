@@ -1,6 +1,16 @@
 
 class Misc {
 
+    // no matter how often it is called, it waits "delay" before invoking itself
+    static debounce(fn, delay) {
+        let timeout_fn = undefined;
+        return (...args) => {
+            clearTimeout(timeout_fn);
+            timeout_fn = setTimeout(() => {
+                fn.call(this, ...args);
+            }, delay);
+        };
+    }
 
     static isBelow($el) {
         let win_height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
