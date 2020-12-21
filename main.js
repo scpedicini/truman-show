@@ -28,17 +28,23 @@ try {
 
 function createWindow() {
     // Create the browser window.
-    mainWindow = new BrowserWindow({
-        width: 1440,
-        height: 800,
+    let options = {
+        width: appSettings.BOUNDS?.width ?? 1440,
+        height: appSettings.BOUNDS?.height ?? 800,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             devTools: appSettings.DEV_ENV ?? false, // can't bring them up even with the menu bar
         },
         transparent: true,
         frame: false,
+    };
 
-    });
+    // if('x' in appSettings.BOUNDS)
+    //     options.x = appSettings.BOUNDS.x;
+    // if('y' in appSettings.BOUNDS)
+    //     options.y = appSettings.BOUNDS.y;
+
+    mainWindow = new BrowserWindow(options);
 
     mainWindow.on('ready-to-show', function () {
         mainWindow.show();
@@ -63,6 +69,10 @@ ipcMain.handle('load-settings', args => {
 });
 
 ipcMain.on('close', function() {
+
+    appSettings.BOUNDS = mainWindow.getBounds();
+    fs.writeFileSync(settingsFile, JSON.stringify(appSettings), 'utf8');
+
     app.quit();
 });
 

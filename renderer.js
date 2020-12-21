@@ -76,8 +76,12 @@ function setupHandlers() {
     document.addEventListener('keydown', event => {
         if(!(event.key in Config.keyMap)) {
             Config.keyMap[event.key] = true;
-            if (event.key === 'Escape' && !Config.lightBoxOpen) {
-                window.ipcRenderer.send('close');
+            if (event.key === 'Escape') {
+                if(!Config.lightBoxOpen)
+                    window.ipcRenderer.send('close');
+                else {
+                    Config.lightBoxOpen = false;
+                }
             }
         }
     });
@@ -180,8 +184,9 @@ function initializeLightBox() {
         touchFollowAxis: true,
         zoomable: false,
         draggable: false,
-        skin: 'paddedbox', // creates a class called glightbox-paddedbox
+        skin: 'paddedbox' // creates a class called glightbox-paddedbox
     });
+
     // slide_after_load
     lightBox.on('slide_changed', e => {
         console.info('slide changed', e);
@@ -218,6 +223,7 @@ function initializeLightBox() {
     });
 
     lightBox.on('close', (e) => {
+        console.log('glightbox closed');
         Config.lightBoxOpen = false;
     });
 

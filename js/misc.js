@@ -4,14 +4,24 @@ class Misc {
     // no matter how often it is called, it waits "delay" before invoking itself
     static debounce(fn, delay) {
         let timeout_fn = undefined;
-        return (...args) => {
+
+        let debounce_fn = (...args) => {
             clearTimeout(timeout_fn);
             timeout_fn = setTimeout(() => {
                 fn.call(this, ...args);
             }, delay);
         };
+
+        debounce_fn.cancel = () => clearTimeout(timeout_fn);
+
+        return debounce_fn;
     }
 
+    /**
+     * Check if element is below current viewport for DOM
+     * @param $el
+     * @returns {boolean}
+     */
     static isBelow($el) {
         let win_height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
         let top = window.scrollY || window.scrollTop || document.getElementsByTagName('html')[0].scrollTop;
@@ -24,6 +34,10 @@ class Misc {
     }
 
 
+    /**
+     * Simple CPU-bound blocking operation for testing purposes
+     * @param baseNumber - higher the value, the longer the operation will block
+     */
     static blockCPU(baseNumber) {
         console.time('blockCPU');
         let result = 0;
@@ -35,8 +49,8 @@ class Misc {
 
     /**
      * Convert a JSON string into a standard Javascript Object
-     * @param x
-     * @returns {{}}
+     * @param x - JSON string
+     * @returns {{}} - Deserialized object or empty object
      */
     static SafeParse(x) {
         let obj = { };
@@ -80,16 +94,21 @@ class Misc {
      */
     static GetISOTime(dateObj = undefined)
     {
-        //return (dateObj ?? new Date()).toISOString().replace(/[TZ]/g, ' ').trim();
         return (dateObj ?? new Date()).toISOString().replace(/\.\d\d\d/g, '').trim();
     }
 
-    // 2020-12-06T02:03:46
+    /**
+     * Convert a JS date object into a ISO compatible locale-time string
+     * @param {Date} dateObj
+     * @returns {string} - 2020-12-06T02:03:46
+     * @constructor
+     */
     static ConvertToLocaleTimeString(dateObj) {
         return  dateObj.getFullYear() + '-' + (dateObj.getMonth() + 1).toString().padStart(2, '0') + '-' +
                 dateObj.getDate().toString().padStart(2, '0') + 'T' + dateObj.getHours().toString().padStart(2, '0') + ':' +
                 dateObj.getMinutes().toString().padStart(2, '0') + ':' + dateObj.getSeconds().toString().padStart(2, '0');
     }
+
 
     static Render(template, paramobj) {
         if(paramobj instanceof Object) {
@@ -102,6 +121,11 @@ class Misc {
         return template;
     }
 
+    /**
+     * Checks whether a string can be converted to a number (integer or float)
+     * @param str
+     * @returns {boolean}
+     */
     static IsNumerical(str) {
         return !isNaN(parseInt(str));
     }

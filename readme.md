@@ -3,7 +3,9 @@
 
 ## About
 
-Truman Show is a quick image search program designed to be hotkeyed via AUTOHOTKEY to search google image repository and copy to a desired image to the clipboard in a fast accessible manner.
+Truman Show is a quick image search program designed to be hotkeyed via AUTOHOTKEY to search the google image repository and copy selected images to the clipboard in an easy and accessible manner. The intent is to be as seamless as possible so that the user is not taken out of their normal workflow.
+
+![alt text](assets/demo.gif)
 
 ## Getting Started
 

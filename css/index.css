@@ -10,21 +10,72 @@
 /*    pointer-events: none; */
 /* } */
 
-.fill {
-  min-height: 90%;
-  height: 90%;
-}
+
+/*region Glightbox related */
 
 .glightbox-paddedbox {
   margin: 0;
 }
 
-.copy-to-clipboard {
-  margin-top: 5px;
-}
 
 .gslide-description {
   background-color: transparent !important;
+}
+
+
+.gallery {
+  /*background-color: #fff;*/
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+
+@keyframes gzoomInRegular {
+  from {
+    opacity: 0;
+    transform: scale3d(0.3, 0.3, 0.3);
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes gfastZoomOut {
+  from {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+    transform: scale3d(0.3, 0.3, 0.3);
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+.gzoomInHead {
+  animation: gzoomInRegular 0.5s ease;
+}
+
+.gzoomOutHead {
+  animation: gfastZoomOut 0.1s ease;
+}
+
+/*endregion*/
+
+.fill {
+  min-height: 90%;
+  height: 90%;
+}
+
+
+.copy-to-clipboard {
+  margin-top: 5px;
 }
 
 body {
@@ -97,15 +148,12 @@ img {
   opacity: 0;
 }
 
-.gallery {
-  /*background-color: #fff;*/
-  display: flex;
-  flex-flow: row wrap;
-  align-items: center;
-  justify-content: center;
-}
-
 .bi::before {
   vertical-align: -0.125em !important;
   margin-bottom: calc(-0.125em / 2);
 }
+
+
+
+
+

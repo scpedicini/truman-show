@@ -2,6 +2,9 @@
   "extends": "stylelint-config-standard",
   "rules": {
     "comment-empty-line-before": null,
-    "comment-whitespace-inside": null
+    "comment-whitespace-inside": null,
+    "max-empty-lines": null,
+    "no-eol-whitespace": null,
+    "value-keyword-case": null
   }
 }
