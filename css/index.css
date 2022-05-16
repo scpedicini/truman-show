@@ -13,6 +13,10 @@
 
 /*region Glightbox related */
 
+body {
+  font: caption;
+}
+
 .glightbox-paddedbox {
   margin: 0;
 }

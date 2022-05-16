@@ -49,10 +49,14 @@ function createWindow() {
     mainWindow.on('ready-to-show', function () {
         mainWindow.show();
         mainWindow.focus();
+
     });
 
+    const passedArgs = process.argv.slice(2).join(' ').trim();
+
+
     // and load the index.html of the app.
-    mainWindow.loadFile('index.html');
+    mainWindow.loadFile('index.html', { query: { 'searchString': passedArgs } });
 
     if(appSettings.DEV_ENV)
         mainWindow.webContents.openDevTools();

@@ -130,7 +130,7 @@ class Misc {
         return !isNaN(parseInt(str));
     }
 
-    static IsNullOrUndefined(x) { return x === undefined || x === null; }
+    static IsNullOrUndefined(x) { return typeof x === 'undefined' || x === null; }
 
     static IsNullOrWhitespace(x) { return this.IsNullOrUndefined(x) || x.trim().length === 0; }
 

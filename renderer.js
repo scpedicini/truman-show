@@ -24,8 +24,16 @@ let Config = {
 };
 
 //setTimeout(() => Config.newSearch = 'brannigans big book of war', 1000);
-document.addEventListener('DOMContentLoaded', () => {
-    runSetup();
+document.addEventListener('DOMContentLoaded', async () => {
+    await runSetup();
+
+    const searchString = new URL(window.location.href).searchParams.get('searchString');
+    if (!Misc.IsNullOrWhitespace(searchString) ) {
+        console.log(`Found search string: ${searchString}`);
+        $searchTextBox.value = searchString;
+        Config.newSearch = $searchTextBox.value.trim();
+        $searchTextBox.focus();
+    }
 });
 
 function setupObserver() {
@@ -114,8 +122,8 @@ function setupHandlers() {
 }
 
 
-function runSetup() {
-    setupSettings();
+async function runSetup() {
+    await setupSettings();
     setupObserver();
     setupHandlers();
 }
@@ -133,7 +141,7 @@ async function copyToClipboard(event) {
     else
         $img = event.target.closest('.ginner-container').querySelector('img');
 
-    // this img is completely loaded but we don't have hte actual qulaifications of this file
+    // this img is completely loaded, but we don't have the actual qualifications of this file
     let canvas = document.createElement('canvas');
     canvas.height = parseInt( $img.getAttribute('data-originalheight') );
     canvas.width = parseInt( $img.getAttribute('data-originalwidth') );
