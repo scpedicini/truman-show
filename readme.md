@@ -33,7 +33,7 @@ You can now instantly access truman show whenever you type Ctrl-Alt-H.
 
 ### Future Plans
 
-- [ ] Add site(s) to ban list to prevent from showing up in the search (very useful to filter out stock image sites like shutterstock where images typically have watermarks) 
+- [X] Add site(s) to ban list to prevent from showing up in the search (very useful to filter out stock image sites like shutterstock where images typically have watermarks) 
 
 
 ## Legal
