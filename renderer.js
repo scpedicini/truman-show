@@ -68,6 +68,7 @@ function setupHandlers() {
         document.querySelector('#cse_clientid').value = Config.appSettings.CSE_ID;
         document.querySelector('#cse_key').value = Config.appSettings.CSE_KEY;
         document.querySelector('#settings_color').value = Config.appSettings.COLOR_SETTINGS;
+        document.querySelector('#banned_domains').value = Config.appSettings.BANNED_DOMAINS.join('\n');
         modalSettings.show();
     });
 
@@ -75,6 +76,7 @@ function setupHandlers() {
         Config.appSettings.CSE_ID = document.querySelector('#cse_clientid').value;
         Config.appSettings.CSE_KEY = document.querySelector('#cse_key').value;
         Config.appSettings.COLOR_SETTINGS = document.querySelector('#settings_color').value;
+        Config.appSettings.BANNED_DOMAINS = document.querySelector('#banned_domains')?.value.split('\n')?.map(v => v.trim()) ?? [];
         document.querySelector('body').style.backgroundColor = Config.appSettings.COLOR_SETTINGS;
         window.ipcRenderer.send('save-settings', Config.appSettings);
         modalSettings.hide();
@@ -336,21 +338,32 @@ async function search() {
 
             console.info(json);
 
-            for (let item of json?.items) {
-                // item?.image?.thumbnailLink
-                $container = document.querySelector('div[data-filled="false"]');
-                if ($container === null) {
-                    $container = createContainer();
-                    $gallery.appendChild($container);
+            if(Array.isArray(json?.items)) {
+
+                const isBanned = hostname => Config.appSettings.BANNED_DOMAINS.map(d => new RegExp(d, 'gi')).some(re => re.test(hostname));
+
+                const searchResults = json.items.map(itm => new GoogleClasses.GoogleItemResult(itm))
+                    .filter(item => !isBanned(new URL(item.link).hostname) );
+
+                // filter out results by Config.appSettings.BANNED_DOMAINS
+
+
+                for (const item of searchResults) {
+                    // item?.image?.thumbnailLink
+                    $container = document.querySelector('div[data-filled="false"]');
+                    if ($container === null) {
+                        $container = createContainer();
+                        $gallery.appendChild($container);
+                    }
+
+                    let $img = $container.querySelector('img');
+                    $img.src = item.image.thumbnailLink;
+
+                    $container.setAttribute('data-filled', 'true');
+                    $container.setAttribute('data-fullimage', item.link);
+                    modifiedGallery = true;
+                    modifiedContainers.push($container);
                 }
-
-                let $img = $container.querySelector('img');
-                $img.src = item?.image?.thumbnailLink;
-
-                $container.setAttribute('data-filled', 'true');
-                $container.setAttribute('data-fullimage', item?.link);
-                modifiedGallery = true;
-                modifiedContainers.push($container);
             }
         } catch (err) {
             console.error(err);

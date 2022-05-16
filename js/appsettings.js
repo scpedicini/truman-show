@@ -5,6 +5,8 @@ appSettings.CSE_ID = process.env.CSE_ID;
 appSettings.CSE_KEY = process.env.CSE_KEY;
 appSettings.COLOR_SETTINGS = '#eeeeee';
 
+appSettings.BANNED_DOMAINS = ['shutterstock.com'];
+
 appSettings.BOUNDS = { };
 
 // appSettings.LocalPath = `F:\\Temp\\Images`;

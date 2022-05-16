@@ -7,7 +7,7 @@
     },
     "extends": "eslint:recommended",
     "parserOptions": {
-        "ecmaVersion": 12
+        "ecmaVersion": 13
     },
     "rules": {
         "indent": [
@@ -21,16 +21,13 @@
             "error",
             "single"
         ],
-        "semi": [
-            "error",
-            "always"
-        ],
         "no-unused-vars": "off"
     },
     "globals": {
         "Misc": true,
         "ClipboardItem": true,
         "GLightbox": true,
-        "bootstrap": true
+        "bootstrap": true,
+        "GoogleClasses": true
     }
 }
