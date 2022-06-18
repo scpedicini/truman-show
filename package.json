@@ -14,7 +14,7 @@
   "license": "GPL-3.0",
   "homepage": "https://specularrealms.com",
   "devDependencies": {
-    "electron": "^11.1.0",
+    "electron": "^19.0.4",
     "electron-builder": "^22.9.1",
     "electron-rebuild": "^2.3.4",
     "eslint": "^8.15.0",

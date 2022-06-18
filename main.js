@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, ipcMain, globalShortcut } = require('electron');
+const {app, BrowserWindow, ipcMain} = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -11,8 +11,8 @@ let settingsFile;
 let baseSettings = require('./js/appsettings');
 
 // dev = home directory, prod = user data path (roaming/truman-show)
-let basepath = baseSettings.DEV_ENV ? app.getAppPath() : app.getPath('userData');
-settingsFile = path.join(basepath, 'appsettings.json');
+let basePath = baseSettings.DEV_ENV ? app.getAppPath() : app.getPath('userData');
+settingsFile = path.join(basePath, 'appsettings.json');
 
 appSettings = {...baseSettings};
 
@@ -26,7 +26,7 @@ try {
 
 
 
-function createWindow() {
+async function createWindow() {
     // Create the browser window.
     let options = {
         width: appSettings.BOUNDS?.width ?? 1440,
@@ -34,6 +34,8 @@ function createWindow() {
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             devTools: appSettings.DEV_ENV ?? false, // can't bring them up even with the menu bar
+            contextIsolation: false,
+            nodeIntegration: false,
         },
         transparent: true,
         frame: false,
@@ -56,7 +58,7 @@ function createWindow() {
 
 
     // and load the index.html of the app.
-    mainWindow.loadFile('index.html', { query: { 'searchString': passedArgs } });
+    await mainWindow.loadFile('index.html', { query: { 'searchString': passedArgs } });
 
     if(appSettings.DEV_ENV)
         mainWindow.webContents.openDevTools();
@@ -68,7 +70,7 @@ ipcMain.on('save-settings', (event, data)  => {
     fs.writeFileSync(settingsFile, JSON.stringify(appSettings), 'utf8');
 });
 
-ipcMain.handle('load-settings', args => {
+ipcMain.handle('load-settings', (_event, ..._args) => {
     return appSettings;
 });
 
@@ -89,11 +91,11 @@ ipcMain.on('close', function() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
 
     //setTimeout(() => createWindow(), 5000);
 
-    createWindow();
+    await createWindow();
 
     // globalShortcut.register('Ctrl+Alt+H', () => {
     //     console.log("global shortcut");
@@ -102,7 +104,7 @@ app.whenReady().then(() => {
 
 
     app.on('activate', function () {
-        // On macOS it's common to re-create a window in the app when the
+        // On macOS, it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });
