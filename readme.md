@@ -20,14 +20,14 @@ For newcomers, it is recommended that you download the latest release version an
 
 ### Register a custom image search engine with Google 
 
-Truman show requires two API keys, a client id registered to your [Google custom search engine](https://cse.google.com/cse/all), and the secret API key associated with it. Truman Show attempts to retrieve these values from the environment variables *CSE_ID* and *CSE_KEY* respectively, but can be overridden in the settings page after launching the application. It is also recommended that you install a copy of [Autohotkey](https://www.autohotkey.com) in order to register a global shortcut to easily bring up Truman Show whenever you want to search for images.
+Truman show requires two API keys, a client id registered to your [Google custom search engine](https://cse.google.com/cse/all), and the secret API key associated with it. Truman Show attempts to retrieve these values from the environment variables *CSE_ID* and *CSE_KEY* respectively, but can be overridden in the settings page after launching the application. It is also recommended that you install a copy of [Autohotkey](https://www.autohotkey.com) for Windows, or [Raycast](https://www.raycast.com) for Mac in order to register a global shortcut to easily bring up Truman Show whenever you want to search for images.
 
 Add the following to your autohotkey script (AHK) file:
-<pre>
+```batch
 ^!H::
 	Run, "c:/apps/.../dist/truman-show.exe"
 return
-</pre>
+```
 
 You can now instantly access truman show whenever you type Ctrl-Alt-H.
 
