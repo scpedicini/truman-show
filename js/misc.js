@@ -114,7 +114,7 @@ class Misc {
         if(paramobj instanceof Object) {
             for (let key in paramobj) {
                 let re = new RegExp('{{' + key + '}}', 'gi');
-                template = template.replace(re, paramobj[key]);
+                template = template.replaceAll(re, paramobj[key]);
             }
         }
 

@@ -69,6 +69,7 @@ function setupHandlers() {
         document.querySelector('#cse_key').value = Config.appSettings.CSE_KEY;
         document.querySelector('#settings_color').value = Config.appSettings.COLOR_SETTINGS;
         document.querySelector('#banned_domains').value = Config.appSettings.BANNED_DOMAINS.join('\n');
+        document.querySelector('#no_ai').checked = Config.appSettings.NO_AI;
         modalSettings.show();
     });
 
@@ -77,6 +78,7 @@ function setupHandlers() {
         Config.appSettings.CSE_KEY = document.querySelector('#cse_key').value;
         Config.appSettings.COLOR_SETTINGS = document.querySelector('#settings_color').value;
         Config.appSettings.BANNED_DOMAINS = document.querySelector('#banned_domains')?.value.split('\n')?.map(v => v.trim()) ?? [];
+        Config.appSettings.NO_AI = document.querySelector('#no_ai').checked;
         document.querySelector('body').style.backgroundColor = Config.appSettings.COLOR_SETTINGS;
         window.ipcRenderer.send('save-settings', Config.appSettings);
         modalSettings.hide();
@@ -256,7 +258,11 @@ async function LogicLoop() {
 }
 
 // imgType = clipart, face, lineart, stock, photo, animated
-function buildGoogleUrl({cseId, cseKey, searchText, imgType = undefined, transparencyOnly = false, startIndex = 0}) {
+function buildGoogleUrl({cseId, cseKey, searchText, imgType = undefined, transparencyOnly = false, startIndex = 0, noAI = false}) {
+    if(noAI) {
+        searchText = `${searchText} before:2022`;
+    }
+
     let url = `https://www.googleapis.com/customsearch/v1?q=${searchText}&start=${startIndex}&cx=${cseId}&searchType=image&key=${cseKey}&filter=1&safe=active`;
 
     if(imgType !== undefined)
@@ -331,7 +337,13 @@ async function search() {
         try {
 
             let response = await fetch(buildGoogleUrl(
-                {cseId: Config.appSettings.CSE_ID, cseKey: Config.appSettings.CSE_KEY, searchText: Config.curSearch, startIndex: Config.nextIndex}));
+                {
+                    cseId: Config.appSettings.CSE_ID,
+                    cseKey: Config.appSettings.CSE_KEY,
+                    searchText: Config.curSearch,
+                    startIndex: Config.nextIndex,
+                    noAI: Config.appSettings.NO_AI
+                }));
             let json = await response.json();
 
             Config.nextIndex = json?.queries?.nextPage?.[0]?.startIndex;

@@ -18,8 +18,9 @@ appSettings = {...baseSettings};
 
 // settings override environment variable
 try {
-    if (fs.existsSync(settingsFile))
-        appSettings = {...appSettings, ...JSON.parse(fs.readFileSync(settingsFile, 'utf8' ))};
+    if (fs.existsSync(settingsFile)) {
+        appSettings = {...appSettings, ...JSON.parse(fs.readFileSync(settingsFile, 'utf8'))};
+    }
 } catch(e) {
     console.error(e);
 }

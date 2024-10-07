@@ -7,6 +7,16 @@ Truman Show is a quick image search program designed to be hotkeyed via AUTOHOTK
 
 ![alt text](assets/demo.gif)
 
+## Features
+
+✅ Search Google Images
+
+✅ Copy images to clipboard
+
+✅ Option to limit search to images before 2022 (useful for filtering AI generated images)
+
+✅ Ban list for sites you don't want to see in your search results (e.g. stock image sites with watermarks)
+
 ## Getting Started
 
 For newcomers, it is recommended that you download the latest release version and then skip to the "Register" section. However, if you would like to build the project yourself you can follow the instructions below.
