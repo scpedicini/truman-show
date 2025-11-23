@@ -76,7 +76,7 @@ class GoogleItemResult {
 
 class GoogleImageDetails {
     /**
-     * The URL of the page whee the image was found.
+     * The URL of the page where the image was found.
      */
     contextLink
 
