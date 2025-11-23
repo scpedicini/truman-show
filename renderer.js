@@ -263,7 +263,7 @@ function buildGoogleUrl({cseId, cseKey, searchText, imgType = undefined, transpa
         searchText = `${searchText} before:2022`;
     }
 
-    let url = `https://www.googleapis.com/customsearch/v1?q=${searchText}&start=${startIndex}&cx=${cseId}&searchType=image&key=${cseKey}&filter=1&safe=active`;
+    let url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(searchText)}&start=${startIndex}&cx=${cseId}&searchType=image&key=${cseKey}&filter=1&safe=active`;
 
     if(imgType !== undefined)
         url += `&imgType=${imgType}`;
