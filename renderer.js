@@ -11,6 +11,7 @@ let $modal = document.querySelector('#settings');
 let modalSettings = new bootstrap.Modal($modal, { focus: true });
 
 let lightBoxList = [];
+let resultMetaByImageUrl = new Map(); // fullImageUrl -> { sourceUrl, mime, fileFormat }
 
 let Config = {
     State: '',
@@ -145,21 +146,28 @@ async function copyToClipboard(event) {
     else
         $img = event.target.closest('.ginner-container').querySelector('img');
 
-    // this img is completely loaded, but we don't have the actual qualifications of this file
-    let canvas = document.createElement('canvas');
-    canvas.height = parseInt( $img.getAttribute('data-originalheight') );
-    canvas.width = parseInt( $img.getAttribute('data-originalwidth') );
-    let context = canvas.getContext('2d');
-
-    context.drawImage($img, 0, 0);
+    const fullUrl = $img.src;
+    const meta = resultMetaByImageUrl.get(fullUrl);
+    const isGif =
+        meta?.mime?.toLowerCase() === 'image/gif' ||
+        meta?.fileFormat?.toLowerCase() === 'gif' ||
+        /\.gif(\?|#|$)/i.test(fullUrl);
 
     try {
-        let blob = await new Promise(resolve => canvas.toBlob(resolve));
-        await navigator.clipboard.write([
-            new ClipboardItem({
-                'image/png': blob
-            })
-        ]);
+        if (isGif) {
+            const res = await window.ipcRenderer.invoke('clipboard:copy-gif-from-url', { url: fullUrl });
+            if (!res?.ok) throw new Error(res?.error || 'GIF copy failed');
+        } else {
+            // canvas -> PNG path for static images
+            let canvas = document.createElement('canvas');
+            canvas.height = parseInt( $img.getAttribute('data-originalheight') );
+            canvas.width = parseInt( $img.getAttribute('data-originalwidth') );
+            canvas.getContext('2d').drawImage($img, 0, 0);
+            let blob = await new Promise(resolve => canvas.toBlob(resolve));
+            await navigator.clipboard.write([
+                new ClipboardItem({ 'image/png': blob })
+            ]);
+        }
 
         if(!(event instanceof HTMLImageElement))
             event.target.textContent = 'Copied';
@@ -177,6 +185,20 @@ async function copyToClipboard(event) {
     {
         console.error(e);
     }
+}
+
+async function copySourceUrl(event) {
+    const $img = event.target.closest('.gslide')?.querySelector('img')
+              ?? event.target.closest('.ginner-container')?.querySelector('img');
+    if (!$img) return;
+    const meta = resultMetaByImageUrl.get($img.src);
+    if (!meta?.sourceUrl) {
+        event.target.textContent = 'No source';
+        return;
+    }
+    const res = await window.ipcRenderer.invoke('clipboard:copy-text', { text: meta.sourceUrl });
+    if (res?.ok) event.target.textContent = 'Copied URL';
+    else console.error('copy-text failed', res?.error);
 }
 
 
@@ -310,6 +332,7 @@ async function search() {
             l.destroy();
 
         lightBoxList = [];
+        resultMetaByImageUrl.clear();
     }
 
     if(Misc.IsNullOrWhitespace(Config.curSearch) || Config.nextIndex === undefined) return;
@@ -373,6 +396,11 @@ async function search() {
 
                     $container.setAttribute('data-filled', 'true');
                     $container.setAttribute('data-fullimage', item.link);
+                    resultMetaByImageUrl.set(item.link, {
+                        sourceUrl: item.image?.contextLink ?? '',
+                        mime: item.mime ?? '',
+                        fileFormat: item.fileFormat ?? ''
+                    });
                     modifiedGallery = true;
                     modifiedContainers.push($container);
                 }

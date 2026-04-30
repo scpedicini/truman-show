@@ -78,8 +78,20 @@ body {
 }
 
 
-.copy-to-clipboard {
+.ts-button-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: 8px;
   margin-top: 5px;
+}
+
+.ts-button-row .btn {
+  margin: 0;
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 body {
