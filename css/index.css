@@ -110,6 +110,30 @@ footer {
   padding: 10px;
 }
 
+.thumbnail {
+  display: inline-block;
+}
+
+.image-resolution {
+  margin-top: 4px;
+  text-align: center;
+  font-size: 10px;
+  line-height: 1.4;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.55);
+  border-radius: 6px;
+  padding: 0 6px;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.image-resolution:empty {
+  display: none;
+}
+
 .flexible {
   /* height: 200px; */
   max-width: 250px;

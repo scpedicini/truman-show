@@ -301,9 +301,12 @@ function createContainer() {
 
     let $el = Misc.htmlToElement(`
         <div class="image_container placeholder" data-fullimage="" data-filled="false">
-            <a href="javascript:void(0);" class="glightbox-${lightBoxList.length}" data-type="image" data-glightbox="description: .custom-desc1">
-                <img alt="" src="" class="image">
-            </a>
+            <div class="thumbnail">
+                <a href="javascript:void(0);" class="glightbox-${lightBoxList.length}" data-type="image" data-glightbox="description: .custom-desc1">
+                    <img alt="" src="" class="image">
+                </a>
+                <div class="image-resolution"></div>
+            </div>
         </div>`);
 
 
@@ -393,6 +396,11 @@ async function search() {
 
                     let $img = $container.querySelector('img');
                     $img.src = item.image.thumbnailLink;
+
+                    // resolution of the original image (not the thumbnail)
+                    const { width, height } = item.image;
+                    $container.querySelector('.image-resolution').textContent =
+                        width && height ? `${width} × ${height}` : '';
 
                     $container.setAttribute('data-filled', 'true');
                     $container.setAttribute('data-fullimage', item.link);
